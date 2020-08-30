@@ -18,7 +18,7 @@ declare type RedisPubSubConfig = {
 
 declare class RedisPubSub {
   static defaultCreateClient: (redisConfig: any) => any
-  static defaultGetNumSub: (channel: string, pub: any) => number
+  static defaultGetNumSub: (channel: string, pub: any) => Promise<number>
   constructor(config: RedisPubSubConfig)
   setHook(name: string, fn: Function)
   clear()

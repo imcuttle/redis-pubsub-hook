@@ -5,7 +5,8 @@
 [![Prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://prettier.io/)
 [![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg?style=flat-square)](https://conventionalcommits.org)
 
-> redis pubsub for communicating others
+> Redis pubsub for communicating other nodes
+> Using [`node-redis`](https://github.com/NodeRedis/node-redis) and [redis-cluster](https://github.com/gosquared/redis-clustr) client connection driver by default.
 
 ## Installation
 
@@ -18,10 +19,80 @@ yarn add redis-pubsub-hook
 ## Usage
 
 ```javascript
-const redisPubsubHook = require('redis-pubsub-hook')
+const RedisPubsubHook = require('redis-pubsub-hook')
+const WebSocket = require('ws')
+
+const wss = new WebSocket.Server({ port: 8080 })
+
+// Create redis connection on every server
+const pubsub = new RedisPubsubHook({
+  redis: 'redis://localhost:6379' // or `redis://localhost:6379,redis://localhost:6380` cluster
+})
+
+// Create self hook
+pubsub.setHook('sessions', () => wss.clients.map((socket) => socket.session))
+
+wss.on('connection', async function connection(socket, req) {
+  socket.session = req.session
+
+  // Collect all server nodes' responses
+  const sessionsList = await pubsub.request('sessions')
+})
+
+process.on('SIGINT', () => pubsub.clear())
 ```
 
 ## API
+
+### Options
+
+#### `pub`
+
+Redis Client instance
+
+#### `sub`
+
+Redis Client instance
+
+#### `redis`
+
+The config for creating Redis Client
+
+#### `uid`
+
+The uid of this pubsub
+
+- **Type:** `string`
+- **Default:** `uuid()`
+
+#### `hooks`
+
+- **Type:** `{[name: string]: Function}`
+
+#### `createClient`
+
+- **Type:** `(config: any) => RedisClient | RedisCluster`
+- **Default:** `RedisPubSub.defaultCreateClient`
+
+#### `getNumSub`
+
+- **Type:** `(channel: string, pub: RedisClient | RedisCluster) => Promise<number>`
+- **Default:** `RedisPubSub.defaultGetNumSub`
+
+#### `timeout`
+
+- **Type:** `number`
+- **Default:** `3000`
+
+#### `responseChannel`
+
+- **Type:** `string`
+- **Default:** `RequestChannel`
+
+#### `requestChannel`
+
+- **Type:** `string`
+- **Default:** `ResponseChannel`
 
 ## Contributing
 
