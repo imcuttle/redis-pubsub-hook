@@ -20,6 +20,7 @@
 const RedisClustr = require('redis-clustr')
 const { createClient, RedisClient } = require('redis')
 const uuid = require('uuid').v4
+const { promisify } = require('util')
 const { parse } = require('url')
 
 // 获取信道的总共被订阅数量
@@ -191,12 +192,14 @@ class RedisPubSub {
 
   clear() {
     this.sub.off('message', this.onRequest)
-    this.sub.unsubscribe([this.requestChannel, this.responseChannel])
-    this.pub.unsubscribe([this.requestChannel, this.responseChannel])
+
+    return promisify(this.sub.unsubscribe.bind(this.sub))([this.requestChannel, this.responseChannel])
   }
 
-  quit() {
-    this.clear()
+  async quit() {
+    try {
+      await this.clear()
+    } catch (e) {}
     this.sub.quit()
     this.pub.quit()
   }
