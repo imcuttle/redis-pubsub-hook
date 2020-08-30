@@ -1,0 +1,60 @@
+{
+  "name": "redis-pubsub-hook",
+  "version": "1.0.0",
+  "description": "redis pubsub for communicating others",
+  "author": "imcuttle <moyuyc95@gmail.com>",
+  "scripts": {
+    "test": "npx jest",
+    "preversion": "npm test",
+    "doc": "documentation --github --markdown-toc=false readme index.js -a public -s \"API\" && git add README.md",
+    "version": "npm run doc && npm run changelog",
+    "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s -r 0 && git add CHANGELOG.md"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "pretty-quick --staged",
+      "commit-msg": "commitlint -e $HUSKY_GIT_PARAMS"
+    }
+  },
+  "sideEffects": false,
+  "engines": {
+    "node": ">=10"
+  },
+  "keywords": [
+    "imcuttle",
+    "redis",
+    "pubsub",
+    "hook",
+    "redis-pubsub-hook"
+  ],
+  "main": "src",
+  "types": "src/index.d.ts",
+  "license": "MIT",
+  "repository": "imcuttle/redis-pubsub-hook",
+  "jest": {
+    "testMatch": [
+      "**/__test{s,}__/*.(spec|test).{t,j}s{x,}"
+    ]
+  },
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
+    ]
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^9.1.2",
+    "@commitlint/config-conventional": "^9.1.2",
+    "@types/jest": "^26.0.10",
+    "conventional-changelog-cli": "^2.1.0",
+    "documentation": "^13.0.2",
+    "husky": "^4.2.5",
+    "jest": "^26.4.2",
+    "prettier": "^2.1.0",
+    "pretty-quick": "^3.0.0",
+    "redis": "^3.0.2",
+    "redis-clustr": "^1.7.0"
+  },
+  "dependencies": {
+    "uuid": "^8.3.0"
+  }
+}
