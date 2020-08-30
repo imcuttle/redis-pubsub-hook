@@ -1,6 +1,6 @@
 {
   "name": "redis-pubsub-hook",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Redis pubsub for communicating other nodes",
   "author": "imcuttle <moyuyc95@gmail.com>",
   "scripts": {
