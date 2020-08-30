@@ -1,7 +1,7 @@
 {
   "name": "redis-pubsub-hook",
   "version": "1.0.0",
-  "description": "redis pubsub for communicating others",
+  "description": "Redis pubsub for communicating other nodes",
   "author": "imcuttle <moyuyc95@gmail.com>",
   "scripts": {
     "test": "npx jest",
