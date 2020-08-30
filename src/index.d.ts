@@ -26,4 +26,16 @@ declare class RedisPubSub {
   request: (name: string, ...args: any[]) => Array<any>
 }
 
-export = RedisPubSub
+declare class NamespacePubSub {
+  static defaultCreateClient: (redisConfig: any) => any
+  constructor(config: RedisPubSubConfig)
+  register: (namespace: string) => undefined | RedisPubSub
+  getPubSub: (namespace: string) => undefined | RedisPubSub
+  setHook(namespace: string, name: string, fn: Function)
+  request: (name: string, ...args: any[]) => Array<any>
+  remove(namespace: string)
+  clear()
+  quit()
+}
+
+export { RedisPubSub, NamespacePubSub }

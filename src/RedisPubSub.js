@@ -19,7 +19,7 @@
  */
 const RedisClustr = require('redis-clustr')
 const { createClient, RedisClient } = require('redis')
-const uuid = require('uuid')
+const uuid = require('uuid').v4
 const { parse } = require('url')
 
 // 获取信道的总共被订阅数量

@@ -18,14 +18,16 @@ yarn add redis-pubsub-hook
 
 ## Usage
 
+### Basic Usage
+
 ```javascript
-const RedisPubsubHook = require('redis-pubsub-hook')
+const { RedisPubSub } = require('redis-pubsub-hook')
 const WebSocket = require('ws')
 
 const wss = new WebSocket.Server({ port: 8080 })
 
 // Create redis connection on every server
-const pubsub = new RedisPubsubHook({
+const pubsub = new RedisPubSub({
   redis: 'redis://localhost:6379' // or `redis://localhost:6379,redis://localhost:6380` cluster
 })
 
@@ -39,10 +41,46 @@ wss.on('connection', async function connection(socket, req) {
   const sessionsList = await pubsub.request('sessions')
 })
 
-process.on('SIGINT', () => pubsub.clear())
+process.on('SIGINT', () => pubsub.quit())
 ```
 
-## API
+### Namespace Usage
+
+```javascript
+const { NamespacePubSub } = require('redis-pubsub-hook')
+const WebSocket = require('ws')
+
+const wss = new WebSocket.Server({ port: 8080 })
+
+// Create redis connection on every server
+const namespacePubSub = new NamespacePubSub({
+  redis: 'redis://localhost:6379' // or `redis://localhost:6379,redis://localhost:6380` cluster
+})
+
+wss.on('connection', async function connection(socket, req) {
+  const { namespace } = req.query
+  socket.session = req.session
+
+  const pubsub = namespacePubSub.register(namespace)
+
+  pubsub.setHook('sessions', () => wss.clients.map((socket) => socket.session))
+
+  socket.on('close', async () => {
+    // Collect matching namespace sockets' sessions
+    const sessionsList = await pubsub.request('sessions')
+    const sessionCount = sessionsList.reduce((aSessions, bSessions) => aSessions.length + bSessions.length)
+
+    if (!sessionCount) {
+      // Detect all sockets in namespace had been closed
+      namespacePubSub.remove(namespace)
+    }
+  })
+})
+
+process.on('SIGINT', () => namespacePubSub.quit())
+```
+
+## `RedisPubSub`
 
 ### Options
 
